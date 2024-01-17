@@ -61,7 +61,7 @@
                     </ul>
                     <div class="tab-content b-0 mb-0">
                         <div class="tab-pane" id="basictab1">
-                            <div class="table-responsive">
+                            <div class="table-responsive" id="daftar-tagihan">
                                 <table class="table table-bordered table-striped" id="table-tagihan">
                                     <thead>
                                         <tr>
@@ -72,7 +72,7 @@
                                             <th class="text-center">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="daftar-tagihan">
+                                    <tbody>
                                     </tbody>
                                 </table>
                             </div>

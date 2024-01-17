@@ -5,37 +5,30 @@ $(document).ready(function () {
         if (unique == "") {
             $("#spinner").html("")
             $("#daftar-tagihan").html(`
-                <tr>
-                    <td colspan="5" class="text-center">No data available in table</td>
-                </tr>
+            <table class="table table-bordered table-striped" id="table-tagihan">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Tahun Ajaran</th>
+                        <th>Jenis Pembayaran</th>
+                        <th>Nominal</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
             `)
-        } else {
-            $.ajax({
-                data: { unique: unique },
-                url: "/pilihSiswa",
-                type: "GET",
-                dataType: 'json',
-                success: function (response) {
-                    $("#nama-siswa").html(response.data.nama)
-                    $("#kelas-siswa").html(response.data.kelas2)
-                    $.ajax({
-                        data: { unique: response.data.unique },
-                        url: "/getDataTagihan",
-                        success: function (hasil) {
-                            $("#spinner").html("")
-                            $("#daftar-tagihan").html(hasil)
-                        }
-                    });
-                    $.ajax({
-                        data: { unique: response.data.unique },
-                        url: "/getDataTagihanLunas",
-                        success: function (hasil) {
-                            $("#spinner").html("")
-                            $("#daftar-tagihan-lunas").html(hasil)
-                        }
-                    });
-                }
+            $("#table-tagihan").DataTable({
+                processing: true,
+                searching: true,
+                bLengthChange: true,
+                info: false,
+                paging: false,
+                ordering: true,
             });
+        } else {
+            renderTable(unique)
         }
     })
     $("input.money").simpleMoneyFormat({
@@ -236,6 +229,7 @@ $(document).ready(function () {
         $(formdata).each(function (index, obj) {
             data[obj.name] = obj.value;
         });
+        console.log(data);
         if ($("#periode_tagihan").val() == 'BULANAN') {
             let terbayar = document.querySelectorAll('#terbayar')
             let jumlahTerbayar = 0
@@ -266,17 +260,8 @@ $(document).ready(function () {
                         } else {
                             $("#tertagih").val(0)
                             $("#save-pembayaran").removeAttr("disabled");
-                            $("#pilih-siswa").val("").trigger("change")
-                            $("#daftar-tagihan").html(`
-                            <tr>
-                                <td colspan="5" class="text-center">No data available in table</td>
-                            </tr>
-                        `)
-                            $("#daftar-tagihan-lunas").html(`
-                            <tr>
-                                <td colspan="5" class="text-center">No data available in table</td>
-                            </tr>
-                        `)
+                            // $("#pilih-siswa").val("").trigger("change")
+                            renderTable(data.unique_student);
                             $("#unique_student").val("");
                             $("#unique_kelas").val("");
                             $("#unique_tahun_ajaran").val("");
@@ -309,17 +294,8 @@ $(document).ready(function () {
                     } else {
                         $("#tertagih").val(0)
                         $("#save-pembayaran").removeAttr("disabled");
-                        $("#pilih-siswa").val("").trigger("change")
-                        $("#daftar-tagihan").html(`
-                        <tr>
-                            <td colspan="5" class="text-center">No data available in table</td>
-                        </tr>
-                    `)
-                        $("#daftar-tagihan-lunas").html(`
-                        <tr>
-                            <td colspan="5" class="text-center">No data available in table</td>
-                        </tr>
-                    `)
+                        // $("#pilih-siswa").val("").trigger("change")
+                        renderTable(data.unique_student);
                         $("#unique_student").val("");
                         $("#unique_kelas").val("");
                         $("#unique_tahun_ajaran").val("");
@@ -338,7 +314,35 @@ $(document).ready(function () {
         }
     })
 
-
+    //Render Table 
+    function renderTable(unique) {
+        $.ajax({
+            data: { unique: unique },
+            url: "/pilihSiswa",
+            type: "GET",
+            dataType: 'json',
+            success: function (response) {
+                $("#nama-siswa").html(response.data.nama)
+                $("#kelas-siswa").html(response.data.kelas2)
+                $.ajax({
+                    data: { unique: response.data.unique },
+                    url: "/getDataTagihan",
+                    success: function (hasil) {
+                        $("#spinner").html("")
+                        $("#daftar-tagihan").html(hasil)
+                    }
+                });
+                $.ajax({
+                    data: { unique: response.data.unique },
+                    url: "/getDataTagihanLunas",
+                    success: function (hasil) {
+                        $("#spinner").html("")
+                        $("#daftar-tagihan-lunas").html(hasil)
+                    }
+                });
+            }
+        });
+    }
     //Hendler Error
     function displayErrors(errors) {
         // menghapus class 'is-invalid' dan pesan error sebelumnya

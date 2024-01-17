@@ -195,6 +195,19 @@ class TagihanSiswaController extends Controller
             ->where('b.status', '=', 0)
             ->get();
         $no = 1;
+        echo '
+        <table class="table table-bordered table-striped" id="table-tagihan">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tahun Ajaran</th>
+                    <th>Jenis Pembayaran</th>
+                    <th>Nominal</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+        ';
         foreach ($siswa as $row) {
             $tagihan = DB::table('setting_tagihans as a')
                 ->join('jenis_pembayarans as b', 'a.unique_jenis_pembayaran', 'b.unique')
@@ -220,6 +233,22 @@ class TagihanSiswaController extends Controller
                                 ';
             }
         }
+        echo '
+        </tbody>
+        </table>
+        ';
+        echo '
+        <script>
+        $("#table-tagihan").DataTable({
+            processing: true,
+            searching: true,
+            bLengthChange: true,
+            info: false,
+            paging: false,
+            ordering: true,
+        });
+        </script>
+        ';
     }
     public function get_data_tagihan_lunas(Request $request)
     {

@@ -17,7 +17,7 @@
                                 <select class="form-control" id="matkul-judul">
                                     <option value="ALL">SEMUA KELAS</option>
                                     @foreach($kelas as $row)
-                                    <option value="{{ $row->unique }}">{{ $row->kelas }}&nbsp;-&nbsp;{{ $row->huruf }}</option>
+                                    <option value="{{ $row->unique }}">{{ $row->kelas }}{{ $row->huruf }}</option>
                                     @endforeach
                                 </select>
                             </div>

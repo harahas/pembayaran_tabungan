@@ -118,7 +118,7 @@
     <script>
         setInterval(() => {
             $("#login .time-alert").remove();
-        }, 5000);
+        }, 3000);
         // let login = document.querySelector('#login-btn');
         // login.addEventListener('click', function(e) {
         //     login.setAttribute("disabled", "true");
