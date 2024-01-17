@@ -60,9 +60,14 @@ class TagihanSiswaController extends Controller
             //Jumlah nominal yang harus di bayae
             $nominal = preg_replace('/[,]/', '', $request->nominal) - preg_replace('/[,]/', '', $request->kembali);
             //Jika Unique Generate telah ada
+            if ($request->periode_tagihan == "BULANAN") {
+                $tertagih = preg_replace('/[,]/', '', $request->tertagih);
+                $totalNominal = $tertagih / $request->jumlah_terbayar;
+            } else {
+                $totalNominal = $nominal;
+            }
             if ($cek) {
                 $data = [
-                    'unique' => Str::orderedUuid(),
                     'unique_student' => $request->unique_student,
                     'unique_kelas' => $request->unique_kelas,
                     'unique_tahun_ajaran' => $request->unique_tahun_ajaran,
@@ -70,14 +75,22 @@ class TagihanSiswaController extends Controller
                     'unique_generate' => $request->unique_generate,
                     'periode_tagihan' => $request->periode_tagihan,
                     'tanggal_bayar' => $request->tanggal_bayar,
-                    'nominal' => $nominal,
+                    'nominal' => $totalNominal,
                 ];
                 //Cek Jika jenis pembayaran adalah BULANAN dan jumlah bayar kurang dari nominal yang di tagihkan
-                if ($request->periode_tagihan == "BULANAN" && $nominal < $request->nominal_tagihan) {
+                if ($request->periode_tagihan == "BULANAN" && $nominal < $tertagih) {
                     return response()->json(['minus' => 'Jumlah Pembayaran Tidak Boleh Kurang Dari Nominal yang Ditagihkan']);
                 } else {
                     //Simpan Tagihan
-                    TagihanSiswa::create($data);
+                    if ($request->periode_tagihan == "BULANAN") {
+                        for ($i = 0; $i < $request->jumlah_terbayar; $i++) {
+                            $data['unique'] = Str::orderedUuid();
+                            TagihanSiswa::create($data);
+                        }
+                    } else {
+                        $data['unique'] = Str::orderedUuid();
+                        TagihanSiswa::create($data);
+                    }
                     //Menjumlahkan Nominal yang telah terbayarkan dari unique generate
                     $sum = TagihanSiswa::where('unique_generate', $request->unique_generate)->sum('nominal');
                     //Menghitung Jumlah pembayaran yang telah terbayarkan dari unique generate
@@ -96,7 +109,6 @@ class TagihanSiswaController extends Controller
             //Jika Unique Generate belum pernah ada
             else {
                 $data = [
-                    'unique' => Str::orderedUuid(),
                     'unique_student' => $request->unique_student,
                     'unique_kelas' => $request->unique_kelas,
                     'unique_tahun_ajaran' => $request->unique_tahun_ajaran,
@@ -104,13 +116,21 @@ class TagihanSiswaController extends Controller
                     'unique_generate' => $request->unique_generate,
                     'periode_tagihan' => $request->periode_tagihan,
                     'tanggal_bayar' => $request->tanggal_bayar,
-                    'nominal' => $nominal,
+                    'nominal' => $totalNominal,
                 ];
                 //Cek Jika jenis pembayaran adalah BULANAN dan jumlah bayar kurang dari nominal yang di tagihkan
-                if ($request->periode_tagihan == "BULANAN" && $nominal < $request->nominal_tagihan) {
+                if ($request->periode_tagihan == "BULANAN" && $nominal < $tertagih) {
                     return response()->json(['minus' => 'Jumlah Pembayaran Tidak Boleh Kurang Dari Nominal yang Ditagihkan']);
                 } else {
-                    TagihanSiswa::create($data);
+                    if ($request->periode_tagihan == "BULANAN") {
+                        for ($i = 0; $i < $request->jumlah_terbayar; $i++) {
+                            $data['unique'] = Str::orderedUuid();
+                            TagihanSiswa::create($data);
+                        }
+                    } else {
+                        $data['unique'] = Str::orderedUuid();
+                        TagihanSiswa::create($data);
+                    }
                     $sum = TagihanSiswa::where('unique_generate', $request->unique_generate)->sum('nominal');
                     $count = TagihanSiswa::where('unique_generate', $request->unique_generate)->count('id');
                     if ($request->nominal_tagihan == $sum && $request->periode_tagihan == "SEKALI BAYAR") {
@@ -239,10 +259,10 @@ class TagihanSiswaController extends Controller
 
     public function cek_tagihan_terbayar(Request $request)
     {
-        $cek = TagihanSiswa::where('unique_generate', $request->unique_generate)->first();
+        $cek = TagihanSiswa::where('unique_generate', $request->unique_generate);
         // return response()->json(['data_once' => 'oke']);
         if ($request->periode_tagihan == "SEKALI BAYAR") {
-            if ($cek) {
+            if ($cek->first()) {
                 $sum = TagihanSiswa::where('unique_generate', $request->unique_generate)->sum('nominal');
                 $current_nominal = $request->current_nominal - $sum;
                 return response()->json(['data_once' => $current_nominal]);
@@ -251,12 +271,18 @@ class TagihanSiswaController extends Controller
                 return response()->json(['data_once' => $current_nominal]);
             }
         } else if ($request->periode_tagihan == "BULANAN") {
-            if ($cek) {
-                $count = TagihanSiswa::where('unique_generate', $request->unique_generate)->count('id');
-                return response()->json(['data_month' => 6 - $count]);
+            if ($cek->first()) {
+                $count = TagihanSiswa::where('unique_generate', $request->unique_generate);
+                return response()->json([
+                    'data_month' => 6 - $count->count('id'),
+                    'query' => $cek->get()
+                ]);
             } else {
                 $count = 6;
-                return response()->json(['data_month' => $count]);
+                return response()->json([
+                    'data_month' => $count,
+                    'query' => $cek->get()
+                ]);
             }
         }
     }

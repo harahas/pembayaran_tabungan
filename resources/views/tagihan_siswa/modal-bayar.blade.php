@@ -43,7 +43,7 @@
                         {{-- MODAL TAMBAHAN --}}
                         <div class="modal-tambahan"></div>
                         {{-- //MODAL TAMBAHAN --}}
-                        <div class="col-sm-12 mb-2">
+                        <div class="col-sm-12 mb-2 mt-2">
                             <div class="form-group">
                                 <label for="tanggal_bayar">Tanggal Bayar</label>
                                 <input type="date" name="tanggal_bayar" id="tanggal_bayar" class="form-control">
@@ -72,7 +72,7 @@
 </div>
 <script>
     //VANILA JAVASCRIPT
-    //Vanila
+    //Vanila 
     let angka = document.querySelector('#nominal')
     angka.addEventListener('keyup', function() {
         let trim = angka.value.trim()

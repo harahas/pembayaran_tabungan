@@ -117,6 +117,14 @@ $tahun = TahunAjaran::where('status', '1')->first();
                 <div class="spinner" style="position:relative;z-index: 101;"></div>
             </div>`
 
+        function disabledBtn(element) {
+            $(element).attr('disabled', 'true');
+        }
+
+        function enabledBtn(element) {
+            $(element).removeAttr('disabled');
+        }
+
     </script>
 </head>
 

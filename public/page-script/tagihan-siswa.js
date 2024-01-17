@@ -70,6 +70,8 @@ $(document).ready(function () {
         $("#nominal").val(0);
         $("#sisa_bayar").val("")
         $("#kembali").val(0)
+        $("#tertagih").val(0)
+
     })
     $("#daftar-tagihan").on("click", "#btn-bayar", function () {
         $("#spinner").html(loader);
@@ -84,6 +86,7 @@ $(document).ready(function () {
         $("#periode").val($(this).attr("data-periode"))
         $("#nominal_tagihan").val($(this).attr("data-nominal"))
         $("#title-modal").html(`BAYAR TAGIHAN ${$(this).attr("data-jenis")}`)
+
         //REQUEST AJAX
         $.ajax({
             data: {
@@ -115,21 +118,94 @@ $(document).ready(function () {
                     $(".modal-tambahan").html(element);
                     $("#spinner").html("");
                 } else if (response.data_month) {
-                    $("#sisa_bayar").val($("#nominal_tagihan").val())
+
+                    $("#sisa_bayar").val(0)
+                    let nominalTagihan = parseInt($("#nominal_tagihan").val());
                     let element = `
                     <div class="col-sm-12 mb-2">
-                    <div class="alert alert-success" role="alert">
-                    Sisa Bayar: <strong>${response.data_month}</strong> Bulan!
+                        <div class="alert alert-success" role="alert">
+                            Sisa Bayar: <strong>${response.data_month}</strong> Bulan!
+                        </div>
                     </div>
-                    </div>
+                    
                     `;
-                    $(".modal-tambahan").html(element);
+                    let element2 = `<div class="row"><div class="col" style="display:flex;align-items:center"><label for="terbayar">Jumlah bulan yang ingin dibayar: &nbsp;</label>`
+
+                    // response.query.map((a) => {
+                    //     element2 += `
+                    //     <input type="checkbox" name="terbayar[]" id="terbayar" checked="true" disabled="true" class="form-check-input me-2">
+                    //     `
+                    // })
+                    for (let i = 0; i < (6 - response.data_month); i++) {
+                        element2 += `
+                        <input type="checkbox" name="terbayar[]" id="terbayar" checked="true" disabled="true" class="form-check-input me-2">
+                        `
+                    }
+                    for (let i = 0; i < response.data_month; i++) {
+                        element2 += `
+                        <input type="checkbox" name="terbayar[]" id="terbayar" class="form-check-input me-2">
+                        `
+                    }
+                    element2 += `</div></<div>`
+                    let element3 = `
+                    <div class="col-sm-12 mb-2 mt-2">
+                    <div class="form-group">
+                        <label for="tertagih">Total yang ditagihkan</label>
+                        <input type="text" name="tertagih" id="tertagih" class="form-control money" value="0" readonly>
+                    </div>
+                    </div>`
+
+                    $(".modal-tambahan").html(element + element2 + element3);
                     $("#spinner").html("");
                 }
             }
         });
         $("#modal-bayar").modal('show')
     })
+    //KETIKA CHECK DI CEKLIS
+
+    $("#modal-bayar").on('click', "#terbayar", function () {
+        let nominalTagihan = parseInt($("#nominal_tagihan").val());
+        let terbayar = document.querySelectorAll('#terbayar')
+        let jumlahTerbayar = 0
+        terbayar.forEach((a) => {
+            let disabled = a.getAttribute("disabled");
+            if (disabled == null) {
+                if (a.checked) {
+                    jumlahTerbayar += 1
+                }
+            }
+
+        })
+        $("#tertagih").val(new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+        })
+            .format(nominalTagihan * jumlahTerbayar)
+            .replace("Rp", "")
+            .replace(/\./g, ","))
+        $("#sisa_bayar").val(nominalTagihan * jumlahTerbayar)
+
+        // UPDATE KEMBALIAN
+        let nominal = $("#nominal").val().replace(/\,/g, "");
+        let kembali = $("#kembali");
+        let sisa_bayar = $("#sisa_bayar").val();
+
+        let hasil = parseInt(nominal) - parseInt(sisa_bayar)
+        if (hasil <= 0 || isNaN(hasil)) {
+            kembali.val("0")
+        } else {
+            kembali.val(new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                minimumFractionDigits: 0,
+            })
+                .format(hasil)
+                .replace("Rp", "")
+                .replace(/\./g, ","))
+        }
+    });
     //KETIKA NOMINAL DIKETIKAN
     $("#nominal").on("keyup", function () {
         let nominal = $(this).val().replace(/\,/g, "");
@@ -160,46 +236,106 @@ $(document).ready(function () {
         $(formdata).each(function (index, obj) {
             data[obj.name] = obj.value;
         });
-        $.ajax({
-            data: $('#modal-bayar form').serialize(),
-            url: "/tagihan_siswa",
-            type: "POST",
-            dataType: 'json',
-            success: function (response) {
-                if (response.minus) {
-                    $("#save-pembayaran").removeAttr("disabled");
-                    Swal.fire("Warning!", response.minus, "warning");
-                } else if (response.errors) {
-                    $("#save-pembayaran").removeAttr("disabled");
-                    displayErrors(response.errors);
-                } else {
-                    $("#save-pembayaran").removeAttr("disabled");
-                    $("#pilih-siswa").val("").trigger("change")
-                    $("#daftar-tagihan").html(`
-                        <tr>
-                            <td colspan="5" class="text-center">No data available in table</td>
-                        </tr>
-                    `)
-                    $("#daftar-tagihan-lunas").html(`
-                        <tr>
-                            <td colspan="5" class="text-center">No data available in table</td>
-                        </tr>
-                    `)
-                    $("#unique_student").val("");
-                    $("#unique_kelas").val("");
-                    $("#unique_tahun_ajaran").val("");
-                    $("#unique_jenis_pembayaran").val("");
-                    $("#unique_generate").val("");
-                    $("#periode_tagihan").val("");
-                    $("#tanggal_bayar").val("");
-                    $("#nominal").val(0);
-                    $("#sisa_bayar").val("")
-                    $("#kembali").val(0)
-                    $("#modal-bayar").modal("hide");
-                    Swal.fire("Good job!", response.success, "success");
+        if ($("#periode_tagihan").val() == 'BULANAN') {
+            let terbayar = document.querySelectorAll('#terbayar')
+            let jumlahTerbayar = 0
+            terbayar.forEach((a) => {
+                let disabled = a.getAttribute("disabled");
+                if (disabled == null) {
+                    if (a.checked) {
+                        jumlahTerbayar += 1
+                    }
                 }
+            })
+            if (jumlahTerbayar == 0) {
+                Swal.fire("Warning!", "Silahkan Centang Minimal 1 Bulan Pembayaran", "warning");
+                enabledBtn(this)
+            } else {
+                $.ajax({
+                    data: $('#modal-bayar form').serialize() + '&jumlah_terbayar=' + jumlahTerbayar,
+                    url: "/tagihan_siswa",
+                    type: "POST",
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.minus) {
+                            $("#save-pembayaran").removeAttr("disabled");
+                            Swal.fire("Warning!", response.minus, "warning");
+                        } else if (response.errors) {
+                            $("#save-pembayaran").removeAttr("disabled");
+                            displayErrors(response.errors);
+                        } else {
+                            $("#tertagih").val(0)
+                            $("#save-pembayaran").removeAttr("disabled");
+                            $("#pilih-siswa").val("").trigger("change")
+                            $("#daftar-tagihan").html(`
+                            <tr>
+                                <td colspan="5" class="text-center">No data available in table</td>
+                            </tr>
+                        `)
+                            $("#daftar-tagihan-lunas").html(`
+                            <tr>
+                                <td colspan="5" class="text-center">No data available in table</td>
+                            </tr>
+                        `)
+                            $("#unique_student").val("");
+                            $("#unique_kelas").val("");
+                            $("#unique_tahun_ajaran").val("");
+                            $("#unique_jenis_pembayaran").val("");
+                            $("#unique_generate").val("");
+                            $("#periode_tagihan").val("");
+                            $("#tanggal_bayar").val("");
+                            $("#nominal").val(0);
+                            $("#sisa_bayar").val("")
+                            $("#kembali").val(0)
+                            $("#modal-bayar").modal("hide");
+                            Swal.fire("Good job!", response.success, "success");
+                        }
+                    }
+                });
             }
-        });
+        } else {
+            $.ajax({
+                data: $('#modal-bayar form').serialize(),
+                url: "/tagihan_siswa",
+                type: "POST",
+                dataType: 'json',
+                success: function (response) {
+                    if (response.minus) {
+                        $("#save-pembayaran").removeAttr("disabled");
+                        Swal.fire("Warning!", response.minus, "warning");
+                    } else if (response.errors) {
+                        $("#save-pembayaran").removeAttr("disabled");
+                        displayErrors(response.errors);
+                    } else {
+                        $("#tertagih").val(0)
+                        $("#save-pembayaran").removeAttr("disabled");
+                        $("#pilih-siswa").val("").trigger("change")
+                        $("#daftar-tagihan").html(`
+                        <tr>
+                            <td colspan="5" class="text-center">No data available in table</td>
+                        </tr>
+                    `)
+                        $("#daftar-tagihan-lunas").html(`
+                        <tr>
+                            <td colspan="5" class="text-center">No data available in table</td>
+                        </tr>
+                    `)
+                        $("#unique_student").val("");
+                        $("#unique_kelas").val("");
+                        $("#unique_tahun_ajaran").val("");
+                        $("#unique_jenis_pembayaran").val("");
+                        $("#unique_generate").val("");
+                        $("#periode_tagihan").val("");
+                        $("#tanggal_bayar").val("");
+                        $("#nominal").val(0);
+                        $("#sisa_bayar").val("")
+                        $("#kembali").val(0)
+                        $("#modal-bayar").modal("hide");
+                        Swal.fire("Good job!", response.success, "success");
+                    }
+                }
+            });
+        }
     })
 
 
