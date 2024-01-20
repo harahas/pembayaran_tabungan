@@ -11,6 +11,7 @@ use App\Http\Controllers\MatpelController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\AbsenAllController;
+use App\Http\Controllers\TabunganController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WaliKelasController;
 use App\Http\Controllers\TahunAjaranController;
@@ -53,25 +54,15 @@ Route::get('/refresh_ampuan', [TeacherController::class, 'refresh_ampuan'])->mid
 Route::get('/tambah_ampuan', [TeacherController::class, 'tambah_ampuan'])->middleware('admin');
 Route::get('/hapus_ampuan', [TeacherController::class, 'hapus_ampuan'])->middleware('admin');
 
-//MATA PELAJARAN
-Route::resource('/matpel', MatpelController::class)->middleware('admin');
+
+
 
 // WALI KELAS
 Route::resource('/wali_kelas', WaliKelasController::class)->middleware('admin');
 Route::get('/getWali', [WaliKelasController::class, 'get_wali'])->middleware('admin');
 Route::POST('/updateWaliKelas', [WaliKelasController::class, 'update_perwalian'])->middleware('admin');
 
-//ABSEN
-Route::resource('/absen', AbsenController::class)->middleware('teacher');
-Route::get('/inputAbsen', [AbsenController::class, 'input_absen'])->middleware('teacher');
-Route::get('/absenHadir', [AbsenController::class, 'absen_hadir'])->middleware('teacher');
-Route::get('/absenSakit', [AbsenController::class, 'absen_sakit'])->middleware('teacher');
-Route::get('/absenIzin', [AbsenController::class, 'absen_izin'])->middleware('teacher');
-Route::get('/absenAlfa', [AbsenController::class, 'absen_alfa'])->middleware('teacher');
-//ambil data BAP
-Route::get('/getCurrentBAP', [AbsenController::class, 'get_current_BAP'])->middleware('teacher');
-Route::get('/getAllClass', [AbsenController::class, 'get_kelas'])->middleware('teacher');
-Route::get('/deletBAP', [AbsenController::class, 'deleteBAP'])->middleware('teacher');
+
 
 //TAHUN AJARAN
 Route::resource('/tahun_ajaran', TahunAjaranController::class)->middleware('admin');
@@ -81,14 +72,7 @@ Route::get('/refreshTahunAjaran', [TahunAjaranController::class, 'refresh_tahun_
 //KELAS
 Route::resource('/kelas', KelasController::class)->middleware('admin');
 
-//ABSEN ALL
-Route::resource('/absen_all', AbsenAllController::class)->middleware('wali_kelas');
-Route::get('/inputAbsenAll', [AbsenAllController::class, 'input_absen'])->middleware('wali_kelas');
-Route::get('/hadirAll', [AbsenAllController::class, 'absen_hadir'])->middleware('wali_kelas');
-Route::get('/sakitAll', [AbsenAllController::class, 'absen_sakit'])->middleware('wali_kelas');
-Route::get('/izinAll', [AbsenAllController::class, 'absen_izin'])->middleware('wali_kelas');
-Route::get('/alfaAll', [AbsenAllController::class, 'absen_alfa'])->middleware('wali_kelas');
-Route::get('/hadirSemua', [AbsenAllController::class, 'hadir_semua'])->middleware('wali_kelas');
+
 
 //ROLES
 Route::resource('/roles', RoleController::class)->middleware('auth');
@@ -120,20 +104,9 @@ Route::resource('/histori-kelas', HistoriKelasController::class)->middleware('ad
 Route::get('/getKelas/{kelas:unique}', [HistoriKelasController::class, 'get_kelas'])->middleware('admin');
 Route::get('/naikKelas', [HistoriKelasController::class, 'naik_kelas'])->middleware('admin');
 Route::get('/getSiswa', [HistoriKelasController::class, 'get_siswa'])->middleware('admin');
-
-// LAPORAN PRESENSI
-Route::get('/laporan', [LaporanPresensiController::class, 'index'])->middleware('wali_kelas');
-Route::get('/getKelasLaporan/{unique_tahun_ajaran}', [LaporanPresensiController::class, 'get_kelas'])->middleware('wali_kelas');
-Route::post('/get-laporan', [LaporanPresensiController::class, 'getPDF'])->middleware('wali_kelas');
-Route::get('/get-excel', [ExcelController::class, 'cetak_laporan'])->middleware('wali_kelas');
-
 //DATATABLES
 Route::get('/datatablesSiswa', [StudentController::class, 'dataTables'])->middleware('auth');
-Route::get('/datatablesAbsen', [AbsenController::class, 'dataTables'])->middleware('auth');
-Route::get('/datatablesAbsenAll', [AbsenAllController::class, 'dataTables'])->middleware('auth');
 Route::get('/datatablesGuru', [TeacherController::class, 'dataTables'])->middleware('auth');
-Route::get('/datatablesMatpel', [MatpelController::class, 'dataTables'])->middleware('auth');
-Route::get('/datatablesBAP', [AbsenController::class, 'dataTablesBAP'])->middleware('auth');
 Route::get('/datatablesTahunAjaran', [TahunAjaranController::class, 'dataTables'])->middleware('auth');
 Route::get('/datatablesKelas', [KelasController::class, 'dataTables'])->middleware('auth');
 Route::get('/dataTablesUser', [AuthController::class, 'dataTables'])->middleware('auth');
@@ -142,8 +115,11 @@ Route::get('/dataTablesJenisPembayaran', [JenisPembayaranController::class, 'dat
 Route::get('/dataTablesSettingTagihan', [SettingTagihanController::class, 'dataTables'])->middleware('auth');
 Route::get('/dataTablesListTagihan', [GenerateTagihanController::class, 'dataTables_list_tagihan'])->middleware('auth');
 Route::get('/dataTablesTagihanSiswaGenerate', [GenerateTagihanController::class, 'dataTables_tagihan_siswa_generate'])->middleware('auth');
-Route::get('/datatablesLaporanTahunAjaran', [LaporanPresensiController::class, 'dataTables'])->middleware('auth');
-Route::get('/datatablesLaporanPresensiAll', [LaporanPresensiController::class, 'dataTables_laporan_all'])->middleware('auth');
+Route::get('/dataTableSukarela', [TabunganController::class, 'dataTableSukarela'])->middleware('auth');
+Route::get('/dataTableWajib', [TabunganController::class, 'dataTableWajib'])->middleware('auth');
+Route::get('/dataTableTransport', [TabunganController::class, 'dataTableTransport'])->middleware('auth');
+
+
 
 // TEST PDF
 // Route::get('/testpdf', [LaporanPresensiController::class, 'laporan']);
@@ -151,3 +127,6 @@ Route::get('/datatablesLaporanPresensiAll', [LaporanPresensiController::class, '
 // Route::get('/testexcel', [ExcelController::class, 'test']);
 
 // Route::get('/generate-pdf', [LaporanPresensiController::class, 'generatePDF']);
+
+// Tabungan
+Route::get('/inputTabungan', [TabunganController::class, 'index'])->middleware('auth');

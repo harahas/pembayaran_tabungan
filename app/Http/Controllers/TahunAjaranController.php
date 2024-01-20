@@ -115,17 +115,11 @@ class TahunAjaranController extends Controller
     public function destroy(TahunAjaran $tahunAjaran)
     {
         $cek = TahunAjaran::where('unique', $tahunAjaran->unique)->first();
-        $cek_bap = BAP::where('tahun_ajaran_unique', $tahunAjaran->unique)->first();
 
         if ($cek->status == '1') {
             return response()->json(['errors' => 'Tahun Ajaran Aktif Tidak Bisa Dihapus!']);
         } else {
-            if ($cek_bap) {
-                return response()->json(['errors' => 'Tahun Ajaran Tidak Bisa Dihapus!']);
-            } else {
-                TahunAjaran::where('unique', $tahunAjaran->unique)->delete();
-                return response()->json(['success' => 'Data Tahun Ajaran Berhasil Dihapus!']);
-            }
+            return response()->json(['errors' => 'Tahun Ajaran Tidak Bisa Dihapus!']);
         }
     }
 

@@ -108,8 +108,22 @@
                     @endif
                 </div>
             </li>
-
-
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarPages4" aria-expanded="false" aria-controls="sidebarPages" class="side-nav-link">
+                    <i class="ri-pages-line"></i>
+                    <span> Tabungan Siswa </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarPages4">
+                    @if(auth()->user()->role == 'ADMIN')
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="/inputTabungan">Input Tabungan</a>
+                        </li>
+                    </ul>
+                    @endif
+                </div>
+            </li>
         </ul>
         <!--- End Sidemenu -->
 
