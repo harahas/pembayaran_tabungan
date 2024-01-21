@@ -130,3 +130,6 @@ Route::get('/dataTableTransport', [TabunganController::class, 'dataTableTranspor
 
 // Tabungan
 Route::get('/inputTabungan', [TabunganController::class, 'index'])->middleware('auth');
+// UNTUK MENAMBAHKAN DATA TABUNGAN 
+Route::post('/tambahDataNabung', [TabunganController::class, 'tambahDataNabung'])->middleware('auth');
+Route::get('/ambilSaldo', [TabunganController::class, 'ambilSaldo'])->middleware('auth');

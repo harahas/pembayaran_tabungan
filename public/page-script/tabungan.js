@@ -207,6 +207,17 @@ $(document).ready(function () {
         table.ajax.reload()
         table2.ajax.reload()
         table3.ajax.reload()
+        $.ajax({
+            data: { unique_student: $(this).val() },
+            url: "/ambilSaldo",
+            type: "get",
+            dataType: 'json',
+            success: function (response) {
+                $("#saldo-sukarela").html(response.saldoSukarela);
+                $("#saldo-wajib").html(response.saldoWajib);
+                $("#saldo-transport").html(response.saldoTransport);
+            }
+        });
     });
     $("#tgl_awal").on("change", function () {
         table.ajax.reload()
@@ -218,5 +229,123 @@ $(document).ready(function () {
         table2.ajax.reload()
         table3.ajax.reload()
     });
+    // Ketika button tambah tabung di klik
+    $("#btn-add-data").on("click", function () {
+        $("#title-modal").html("Tambah Transaksi");
+        $("#btn-action").html(`<button type="button" class="btn btn-primary" id="tambah-data">Tambah</button>`)
+        $("#modal-tabungan-siswa").modal("show");
+    })
+    // KETIKA TOMBOL TAMBAH DI KLIK
+    $("#modal-tabungan-siswa").on("click", "#tambah-data", function () {
+        let form = $("form[id='form-nabung']").serialize();
+
+        $.ajax({
+            data: form,
+            url: "/tambahDataNabung",
+            type: "POST",
+            dataType: 'json',
+            success: function (response) {
+                // logikanya menage tampilan jika 1. ada yang tidak tervalidasi(errors) 2. jika success menyimpan data 
+                if (response.errors) {
+                    displayErrors(response.errors);
+                } else if (response.success) {
+                    table.ajax.reload()
+                    table2.ajax.reload()
+                    table3.ajax.reload()
+                    $("#unique_student").val("")
+                    $("#jenis_tabungan").val("")
+                    $("#tanggal").val("")
+                    $("#masuk").val(0)
+                    $("#keluar").val(0)
+                    $("#modal-tabungan-siswa").modal("hide");
+                    Swal.fire("Succes!", response.success, "success");
+                } else if (response.kurang) {
+                    Swal.fire("Warning!", response.kurang, "warning");
+                }
+            }
+        });
+    })
+
+    //Hendler Error
+    function displayErrors(errors) {
+        // menghapus class 'is-invalid' dan pesan error sebelumnya
+        $("input.form-control").removeClass("is-invalid");
+        $("select.form-control").removeClass("is-invalid");
+        $("div.invalid-feedback").remove();
+
+        // menampilkan pesan error baru
+        $.each(errors, function (field, messages) {
+            let inputElement = $("input[name=" + field + "]");
+            let selectElement = $("select[name=" + field + "]");
+            let textAreaElement = $("textarea[name=" + field + "]");
+            let feedbackElement = $(
+                '<div class="invalid-feedback ml-2"></div>'
+            );
+
+            $(".btn-close").on("click", function () {
+                inputElement.each(function () {
+                    $(this).removeClass("is-invalid");
+                });
+                textAreaElement.each(function () {
+                    $(this).removeClass("is-invalid");
+                });
+                selectElement.each(function () {
+                    $(this).removeClass("is-invalid");
+                });
+            });
+
+            $.each(messages, function (index, message) {
+                feedbackElement.append(
+                    $('<p class="p-0 m-0 text-center">' + message + "</p>")
+                );
+            });
+
+            if (inputElement.length > 0) {
+                inputElement.addClass("is-invalid");
+                inputElement.after(feedbackElement);
+            }
+
+            if (selectElement.length > 0) {
+                selectElement.addClass("is-invalid");
+                selectElement.after(feedbackElement);
+            }
+            if (textAreaElement.length > 0) {
+                textAreaElement.addClass("is-invalid");
+                textAreaElement.after(feedbackElement);
+            }
+            inputElement.each(function () {
+                if (inputElement.attr("type") == "text" || inputElement.attr("type") == "number") {
+                    inputElement.on("click", function () {
+                        $(this).removeClass("is-invalid");
+                    });
+                    inputElement.on("change", function () {
+                        $(this).removeClass("is-invalid");
+                    });
+                } else if (inputElement.attr("type") == "date") {
+                    inputElement.on("change", function () {
+                        $(this).removeClass("is-invalid");
+                    });
+                } else if (inputElement.attr("type") == "password") {
+                    inputElement.on("click", function () {
+                        $(this).removeClass("is-invalid");
+                    });
+                } else if (inputElement.attr("type") == "email") {
+                    inputElement.on("click", function () {
+                        $(this).removeClass("is-invalid");
+                    });
+                }
+            });
+            textAreaElement.each(function () {
+                textAreaElement.on("click", function () {
+                    $(this).removeClass("is-invalid");
+                });
+            });
+            selectElement.each(function () {
+                selectElement.on("change", function () {
+                    $(this).removeClass("is-invalid");
+                });
+            });
+        });
+    }
 
 });
