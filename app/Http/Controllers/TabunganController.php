@@ -136,11 +136,14 @@ class TabunganController extends Controller
             $row->keluar = rupiah($row->keluar);
             $row->tanggal = tanggal_hari($row->tanggal);
         }
+
         return DataTables::of($query)->addColumn('action', function ($row) {
-            $actionBtn =
-                '
-                    <button class="btn btn-rounded btn-sm btn-warning text-dark edit-button" title="Edit Data" data-unique="' . $row->unique . '"><i class="ri-edit-line"></i></button>
-                    <button class="btn btn-rounded btn-sm btn-danger text-white delete-button" title="Hapus Data" data-unique="' . $row->unique . '" data-token="' . csrf_token() . '"><i class="ri-delete-bin-line"></i></button>';
+            $actionBtn = '';
+            $actionBtn .= '  
+            <button class="btn btn-rounded btn-sm btn-warning text-dark edit-button" title="Edit Data" data-unique="' . $row->unique . '"><i class="ri-edit-line"></i></button>';
+            if ((time() - strtotime($row->created_at)) <= 30) {
+                $actionBtn .= '<button class="btn btn-rounded btn-sm btn-danger text-white delete-button" title="Hapus Data" data-unique="' . $row->unique . '" data-token="' . csrf_token() . '"><i class="ri-delete-bin-line"></i></button>';
+            }
             return $actionBtn;
         })->make(true);
     }
@@ -233,12 +236,12 @@ class TabunganController extends Controller
                 ->where('jenis_tabungan', $request->jenis_tabungan)->sum('masuk');
             $sumKeluar = Tabungan::where('unique_student', $request->unique_student)
                 ->where('jenis_tabungan', $request->jenis_tabungan)->sum('keluar');
-            if ($request->masuk >= $request->keluar) {
-                $pengurangan = $request->masuk - $request->keluar;
-            } else {
-                $pengurangan = $request->keluar - $request->masuk;
-            }
-            if (($sumMasuk - $sumKeluar) < $pengurangan) {
+            // if ($request->masuk >= $request->keluar) {
+            //     $pengurangan = $request->masuk - $request->keluar;
+            // } else {
+            //     $pengurangan = $request->keluar - $request->masuk;
+            // }
+            if (($sumMasuk - $sumKeluar + $request->masuk) < $request->keluar) {
                 return response()->json(['kurang' => 'Saldo Tidak Mencukupi Untuk Melakukan Penarikan']);
             }
             $data = [
@@ -306,14 +309,9 @@ class TabunganController extends Controller
                 ->where('jenis_tabungan', $request->jenis_tabungan)->sum('masuk');
             $sumKeluar = Tabungan::where('unique_student', $request->unique_student)
                 ->where('jenis_tabungan', $request->jenis_tabungan)->sum('keluar');
-            $currentMasuk = $sumMasuk - $query->masuk;
-            $currentKeluar = $sumKeluar - $query->keluar;
-            if ($request->masuk >= $request->keluar) {
-                $pengurangan = $request->masuk - $request->keluar;
-            } else {
-                $pengurangan = $request->keluar - $request->masuk;
-            }
-            if (($currentMasuk - $currentKeluar) < $pengurangan) {
+            $currentMasuk = $sumMasuk - $query->masuk + $request->masuk;
+            $currentKeluar = $sumKeluar - $query->keluar + $request->keluar;
+            if (($currentMasuk - $currentKeluar) < 0) {
                 return response()->json(['kurang' => 'Saldo Tidak Mencukupi Untuk Melakukan Penarikan']);
             }
             $data = [
