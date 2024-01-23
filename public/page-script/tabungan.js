@@ -235,7 +235,7 @@ $(document).ready(function () {
         $("#btn-action").html(`<button type="button" class="btn btn-primary" id="tambah-data">Tambah</button>`)
         $("#modal-tabungan-siswa").modal("show");
     })
-    // KETIKA TOMBOL TAMBAH DI KLIK
+    // ACTION SIMPAN MI JANGAN LUPA
     $("#modal-tabungan-siswa").on("click", "#tambah-data", function () {
         let form = $("form[id='form-nabung']").serialize();
 
@@ -264,6 +264,69 @@ $(document).ready(function () {
                 }
             }
         });
+    })
+    // KETIKA TOMBOL EDIT DI KLIK
+    $("#table-tabungan-wajib").on("click", '.edit-button', function () {
+        let unique = $(this).data('unique');
+        $.ajax({
+            url: "/getDataTabunganWajib/" + unique,
+            type: "get",
+            dataType: 'json',
+            success: function (response) {
+                $("#current_unique").val(response.tabungan.unique);
+                $("#unique_student").val(response.tabungan.unique_student);
+                $("#jenis_tabungan").val(response.tabungan.jenis_tabungan);
+                $("#jenis_tabungan").parent().addClass('d-none');
+                $("#tanggal").val(response.tabungan.tanggal);
+                $("#masuk").val(response.tabungan.masuk);
+                $("#keluar").val(response.tabungan.keluar);
+                $("#title-modal").html("Update Transaksi");
+                $("#btn-action").html(`<button type="button" class="btn btn-primary" id="update-data">Update Data</button>`)
+                $("#modal-tabungan-siswa").modal("show");
+            }
+        });
+    });
+    // ACTION UPDATE 
+    $("#modal-tabungan-siswa").on("click", "#update-data", function () {
+        let form = $("form[id='form-nabung']").serialize();
+
+        $.ajax({
+            data: form,
+            url: "/updateDataTabunganWajib",
+            type: "POST",
+            dataType: 'json',
+            success: function (response) {
+                // logikanya menage tampilan jika 1. ada yang tidak tervalidasi(errors) 2. jika success menyimpan data 
+                if (response.errors) {
+                    displayErrors(response.errors);
+                } else if (response.success) {
+                    $("#jenis_tabungan").parent().removeClass('d-none');
+                    table.ajax.reload()
+                    table2.ajax.reload()
+                    table3.ajax.reload()
+                    $("#current_unique").val("")
+                    $("#unique_student").val("")
+                    $("#jenis_tabungan").val("")
+                    $("#tanggal").val("")
+                    $("#masuk").val(0)
+                    $("#keluar").val(0)
+                    $("#modal-tabungan-siswa").modal("hide");
+                    Swal.fire("Succes!", response.success, "success");
+                } else if (response.kurang) {
+                    Swal.fire("Warning!", response.kurang, "warning");
+                }
+            }
+        });
+    })
+    // KETIKA MODAL DI CLOSE
+    $(".btn-close").on("click", function () {
+        $("#current_unique").val("")
+        $("#unique_student").val("")
+        $("#jenis_tabungan").val("")
+        $("#jenis_tabungan").parent().removeClass('d-none');
+        $("#tanggal").val("")
+        $("#masuk").val(0)
+        $("#keluar").val(0)
     })
 
     //Hendler Error

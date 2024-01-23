@@ -133,3 +133,7 @@ Route::get('/inputTabungan', [TabunganController::class, 'index'])->middleware('
 // UNTUK MENAMBAHKAN DATA TABUNGAN 
 Route::post('/tambahDataNabung', [TabunganController::class, 'tambahDataNabung'])->middleware('auth');
 Route::get('/ambilSaldo', [TabunganController::class, 'ambilSaldo'])->middleware('auth');
+// EDIT DATA
+Route::get('/getDataTabunganWajib/{tabungan:unique}', [TabunganController::class, 'getDataTabunganWajib'])->middleware('auth');
+// UPDATE DATA
+Route::post('/updateDataTabunganWajib', [TabunganController::class, 'updateDataTabunganWajib'])->middleware('auth');

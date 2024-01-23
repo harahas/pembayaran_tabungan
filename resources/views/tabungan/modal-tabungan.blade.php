@@ -9,6 +9,7 @@
             <div class="modal-body" style="padding:0 2em">
                 <form action="javascript:;" id="form-nabung">
                     @csrf
+                    <input type="text" name="current_unique" id="current_unique">
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
