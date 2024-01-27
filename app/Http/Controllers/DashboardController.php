@@ -16,6 +16,9 @@ class DashboardController extends Controller
             'data_guru' => Teacher::count('id'),
             'data_siswa' => Student::count('id'),
         ];
+        if (auth()->user()->role == 'SISWA') {
+            return redirect('/tabunganSiswa');
+        }
         return view('dashboard.index', $data);
     }
 }

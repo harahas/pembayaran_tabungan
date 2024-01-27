@@ -93,6 +93,15 @@ class StudentController extends Controller
                 'unique_kelas' => $request->kelas,
             ];
             HistoriKelas::create($data_histori_kelas);
+            $dataUser = [
+                'unique' => Str::orderedUuid(),
+                'nama' => $request->nama,
+                'username' => $request->nis,
+                'password' => bcrypt($request->nis),
+                'role'  => 'SISWA'
+
+            ];
+            User::create($dataUser);
             return response()->json(['success' => 'Data Berhasi Disimpan']);
         }
     }
@@ -174,6 +183,12 @@ class StudentController extends Controller
                 ->where('unique_kelas', $student->kelas)
                 ->update(['unique_kelas' => $request->kelas]);
             Student::where('unique', $student->unique)->update($data);
+            $dataUser = [
+                'nama' => $request->nama,
+                'username' => $request->nis,
+                'password' => bcrypt($request->nis),
+            ];
+            User::where('username', $request->nis)->update($dataUser);
             return response()->json(['success' => 'Data Berhasi Diupdate']);
         }
     }

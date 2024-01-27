@@ -57,6 +57,8 @@ $(document).ready(function () {
                 searchable: true,
             },
         ],
+
+
         columnDefs: [
             {
                 targets: [3], // index kolom atau sel yang ingin diatur
@@ -124,6 +126,7 @@ $(document).ready(function () {
                 searchable: true,
             },
         ],
+        order: [[1, "desc"]],
         columnDefs: [
             {
                 targets: [3], // index kolom atau sel yang ingin diatur
@@ -229,11 +232,13 @@ $(document).ready(function () {
         table2.ajax.reload()
         table3.ajax.reload()
     });
+
     // Ketika button tambah tabung di klik
     $("#btn-add-data").on("click", function () {
         $("#title-modal").html("Tambah Transaksi");
         $("#btn-action").html(`<button type="button" class="btn btn-primary" id="tambah-data">Tambah</button>`)
         $("#modal-tabungan-siswa").modal("show");
+        $("#tanggal").val(today())
     })
     // ACTION SIMPAN MI JANGAN LUPA
     $("#modal-tabungan-siswa").on("click", "#tambah-data", function () {
@@ -328,6 +333,38 @@ $(document).ready(function () {
         $("#masuk").val(0)
         $("#keluar").val(0)
     })
+    // DELETE TABUNGAN WAJIB
+    //HAPUS DATA
+    $("#table-tabungan-wajib").on("click", ".delete-button", function () {
+        let unique = $(this).attr("data-unique");
+        let token = $(this).attr("data-token");
+        Swal.fire({
+            title: "Apakah Kamu Yakin?",
+            text: "Kamu akan menghapus data tabungan!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Hapus!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    data: {
+                        _token: token,
+                    },
+                    url: "/deleteTabungan/" + unique,
+                    type: "POST",
+                    dataType: "json",
+                    success: function (response) {
+                        table.ajax.reload()
+                        table2.ajax.reload()
+                        table3.ajax.reload()
+                        Swal.fire("Deleted!", response.success, "success");
+                    },
+                });
+            }
+        });
+    });
 
     //Hendler Error
     function displayErrors(errors) {
@@ -409,6 +446,25 @@ $(document).ready(function () {
                 });
             });
         });
+    }
+    console.log(today());
+    function today() {
+        // Membuat objek Date yang merepresentasikan tanggal dan waktu saat ini
+        let tanggalHariIni = new Date();
+
+        // Mendapatkan informasi tanggal dari objek Date
+        let tanggal = tanggalHariIni.getDate();
+        let bulan = tanggalHariIni.getMonth() + 1; // Ingat bahwa indeks bulan dimulai dari 0, sehingga perlu ditambah 1
+        let tahun = tanggalHariIni.getFullYear();
+        if (bulan < 10) {
+            bulan = '0' + bulan;
+        }
+        if (tanggal < 10) {
+            tanggal = '0' + tanggal;
+        }
+        // Menampilkan tanggal hari ini dalam format yang diinginkan (misalnya: DD/MM/YYYY)
+        let formattedDate = tahun + '-' + bulan + '-' + tanggal;
+        return formattedDate
     }
 
 });

@@ -92,6 +92,7 @@ class TabunganController extends Controller
                 ->join('students as b', 'a.unique_student', '=', 'b.unique')
                 ->select('a.*', 'b.nama')
                 ->where('a.jenis_tabungan', 'wajib')
+                ->where('unique_student', $request->unique_student)
                 ->get();
         } else if ($request->unique_student != '' && $request->tgl_awal == '' && $request->tgl_akhir == '') {
             $query = DB::table('tabungans as a')
@@ -136,13 +137,13 @@ class TabunganController extends Controller
             $row->keluar = rupiah($row->keluar);
             $row->tanggal = tanggal_hari($row->tanggal);
         }
-
         return DataTables::of($query)->addColumn('action', function ($row) {
+            $latest = Tabungan::latest()->first();
             $actionBtn = '';
             $actionBtn .= '  
             <button class="btn btn-rounded btn-sm btn-warning text-dark edit-button" title="Edit Data" data-unique="' . $row->unique . '"><i class="ri-edit-line"></i></button>';
-            if ((time() - strtotime($row->created_at)) <= 30) {
-                $actionBtn .= '<button class="btn btn-rounded btn-sm btn-danger text-white delete-button" title="Hapus Data" data-unique="' . $row->unique . '" data-token="' . csrf_token() . '"><i class="ri-delete-bin-line"></i></button>';
+            if ($row->unique == $latest->unique) {
+                $actionBtn .= '<button class="btn btn-rounded btn-sm btn-danger text-white delete-button ms-1" title="Hapus Data" data-unique="' . $row->unique . '" data-token="' . csrf_token() . '"><i class="ri-delete-bin-line"></i></button>';
             }
             return $actionBtn;
         })->make(true);
@@ -323,5 +324,26 @@ class TabunganController extends Controller
             Tabungan::where('unique', $request->current_unique)->update($data);
             return response()->json(['success' => 'Data Berhasil di simpan']);
         }
+    }
+    public function deleteTabungan(Tabungan $tabungan)
+    {
+        Tabungan::destroy($tabungan->id);
+        return response()->json(['success' => 'Data Tabungan Berhasil di Hapus']);
+    }
+    public function tabunganSiswa()
+    {
+        $siswa = Student::where('nis', auth()->user()->username)->first();
+        $tabungan = Tabungan::where('unique_student', $siswa->unique);
+        $masuk = $tabungan->sum('masuk');
+        $keluar = $tabungan->sum('keluar');
+        $data = [
+            'saldo' => $masuk - $keluar,
+            'nama' => $siswa->nama,
+            'masuk' => $masuk,
+            'keluar' => $keluar,
+            'transaksi' => $tabungan->get()
+
+        ];
+        return view('front-end-tabungan.index', $data);
     }
 }

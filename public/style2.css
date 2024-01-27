@@ -1,0 +1,198 @@
+body {
+    padding:0;
+    margin:0;
+    display: flex;
+    justify-content: center;
+    background-color: #f5f6fa;
+}
+p {
+    padding:0;
+    margin:0;
+}
+
+.container {
+    border: 1px solid grey;
+    /* background-color: blue; */
+    /* height: 100vh; */
+    width: 480px;
+    position: relative;
+    padding: 10px;
+}
+
+.pencarian {
+    display: grid;
+    grid-template-columns: 0.05fr 0.98fr;
+}
+
+.pencarian input{
+    border-radius: 0 20px 20px 0 !important;
+    border: 0;
+    border-top :1px solid grey;
+    border-bottom :1px solid grey;
+    border-right :1px solid grey;
+    outline: none;
+    height: 4vh;
+    /* padding-right: 5px; */
+}
+
+.pencarian button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* padding-left:5px ; */
+    border-radius: 20px 0px 0px 20px !important;
+    border-top :1px solid grey;
+    border-bottom :1px solid grey;
+    border-left :1px solid grey;
+    border-right: 0;
+    background-color: white;
+    cursor: pointer !important;
+}
+
+/* .pencarian i {
+    margin-left: 5px;
+} */
+
+.saldo {
+    margin-top: 10px;
+    display: grid;
+    margin: 10px 5px 5px 5px;
+    border-radius: 3px;
+}
+
+.saldo .jumlah {
+    border-radius: 5px 5px 0px 0 !important;
+    display: flex;
+    justify-content: space-between;
+    background-color: #0097e6;
+    color: white !important;
+}
+
+.saldo p {
+    margin: 10px;
+}
+
+.saldo .menu {
+    background-color: #00a8ff;
+}
+
+.menu .btn {
+    width: 10px;
+    color: white;
+}
+
+.menu {
+    border-radius: 0px 0px 5px 5px !important;
+    height: 25vh;
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.2)
+}
+.menu .img {
+    display: flex;
+    align-items: end;
+    justify-content: space-around;
+}
+.menu .text {
+    display: flex;
+    align-items: end;
+    justify-content: space-around;
+    color: white;
+    cursor: pointer;
+}
+.menu img {
+    /* width: 8vw; */
+    height: 6vh;
+    padding: 0;
+    cursor: pointer;
+}
+
+.histori {
+    display: grid;
+    gap: 2px;
+    grid-template-areas: "satu dua"
+    "tiga tiga";
+    margin: 10px 5px;
+}
+                    
+.histori div {
+    height: 15vh;
+    background-color: white;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    
+}
+
+.histori div:nth-child(3) {
+    height: 7vh;
+}
+
+.pemasukan {
+    grid-area: satu;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+.pengeluaran {
+    grid-area: dua;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.selisih {
+    grid-area: tiga;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bot-bar {
+    background-color:#0097e6;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 7vh;
+    border-radius: 5px 5px 0 0;
+    display: flex;
+    justify-content: center;
+}
+
+.bot-bar img {
+    position: absolute;
+    top:-20px;
+}
+
+@media only screen and (min-width: 500px) {
+    .bot-bar {
+        left: 64vh;
+        right: 64vh;
+    }
+  }
+  @media only screen and (min-width: 1080px) {
+    .bot-bar {
+        left: 73vh;
+        right: 73vh;
+    }
+}
+
+.histori-payment {
+    background-color: white;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 5px 5px 0 0;
+    border-radius: 5px;
+    height: 250px;
+    overflow-y: scroll;
+    margin-bottom: 80px;
+}
+
+.histori-payment .card {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 0.01px solid rgba(128, 128, 128, 0.2);
+    padding: 10px 0;
+}
+
+
+

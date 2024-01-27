@@ -9,10 +9,10 @@
             <div class="modal-body" style="padding:0 2em">
                 <form action="javascript:;" id="form-nabung">
                     @csrf
-                    <input type="text" name="current_unique" id="current_unique">
+                    <input type="hidden" name="current_unique" id="current_unique">
                     <div class="row">
                         <div class="col-sm-12">
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label for="pilih-siswa" class="form-label">Pilih Siswa</label>
                                 <select class="form-control " name="unique_student" id="unique_student">
                                     <option value="" selected disabled>Pilih Siswa</option>
