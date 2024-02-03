@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style2.css">
-    <link rel="stylesheet" href="/fontawesome" />
+    <link rel="stylesheet" href="/fontawesome/css/all.min.css" />
+    <script src="/fontawesome/js/all.min.js"></script>
+    <script src="/page-script/jquery.js"></script>
     <title>Rekening</title>
 </head>
 
@@ -24,7 +26,7 @@
                 <h2 style="margin-left:27px; color: white;">{{ $nama }}</h2>
                 <div class="img">
                     <img src="/img2/dompet.png" alt="">
-                    <img src="/img2/payment.png" alt="">
+                    <img src="/img2/payment.png" alt="" class="bayar">
                     <img src="/img2/histori.png" alt="">
                 </div>
                 <div class="text">
@@ -79,7 +81,27 @@
             <img src="/img2/logo.png" alt="" height="75vh">
         </div>
     </div>
+    {{-- Modal front end --}}
+    <div class="modal">
+        <div class="modal-bayar">
+            <div class="header">
+                <button type="button" data-periode="BULANAN" class="btn btn-secondary">Bulanan</button>
+                <button type="button" data-periode="MINGGUAN" class="btn btn-secondary">Mingguan</button>
+                <button type="button" data-periode="HARIAN" class="btn btn-secondary">Harian</button>
+                <button type="button" data-periode="SEKALI BAYAR" class="btn btn-secondary">Sekali Bayar</button>
+            </div>
 
+            <div class="list-tagihan">
+                <input type="hidden" id="element_tagihan" value="{{ $element }}">
+                <div id="render_tagihan"></div>
+                <div class="clear"></div>
+            </div>
+            <div class="icon-hide">
+                <span id="hide"></span>
+            </div>
+        </div>
+    </div>
+    <script src="/page-script/front-end.js"></script>
 </body>
 
 </html>

@@ -6,7 +6,12 @@ use App\Models\Kelas;
 use App\Models\Student;
 use App\Models\Tabungan;
 use Illuminate\Support\Str;
+use App\Models\TagihanSiswa;
 use Illuminate\Http\Request;
+use App\Models\SettingTagihan;
+use Illuminate\Support\Carbon;
+use App\Models\GenerateTagihan;
+use App\Models\JenisPembayaran;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -332,7 +337,42 @@ class TabunganController extends Controller
     }
     public function tabunganSiswa()
     {
+        $element = '';
         $siswa = Student::where('nis', auth()->user()->username)->first();
+        $siswa_user = DB::table('students as a')
+            ->join('generate_tagihans as b', 'a.unique', '=', 'b.unique_siswa')
+            ->select('a.*', 'b.unique_tahun_ajaran', 'b.unique_tagihan', 'b.unique as unique_generate', 'b.status')
+            ->where('a.unique', '=', $siswa->unique)
+            ->where('b.status', '=', 0)
+            ->get();
+        foreach ($siswa_user as $row) {
+            $tagihan = DB::table('setting_tagihans as a')
+                ->join('jenis_pembayarans as b', 'a.unique_jenis_pembayaran', 'b.unique')
+                ->join('tahun_ajarans as c', 'a.unique_tahun_ajaran', 'c.unique')
+                // ->join('kelas as d', 'a.unique_kelas', 'd.unique')
+                ->select('a.*', 'b.jenis_pembayaran', 'c.tahun_awal', 'c.tahun_akhir', 'c.periode', 'b.periode as jenis_periode', 'b.unique as bunique', 'c.unique as cunique')
+                ->where('a.unique_jenis_pembayaran', $row->unique_tagihan)
+                ->where('a.unique_tahun_ajaran', $row->unique_tahun_ajaran)
+                ->where('a.unique_kelas', $row->kelas)
+                ->get();
+            foreach ($tagihan as $row2) {
+                $element .= '
+                <div class="kartu" data-unique_generate="' . $row->unique_generate . '" data-unique_student="' . $siswa->unique . '" data-unique_kelas="' . $row->kelas . '" data-unique_jenis_pembayaran="' . $row2->bunique . '" data-unique_tahun_ajaran="' . $row2->cunique . '" data-periode="' . $row2->jenis_periode . '" data-csrf="' . csrf_token() . '">
+                    <div class="kartu-left">
+                        <i class="fa-solid fa-money-bill"></i>
+                        <span id="jenis-tagihan">' . $row2->jenis_pembayaran . '</span>
+                    </div>
+                    <div class="kartu-right ">
+                        <span id="periode-tagihan">' . $row2->tahun_awal . '/' . $row2->tahun_akhir . ' ' . $row2->periode . '</span>
+                        <span id="jml-bayar">' . rupiah($row2->nominal) . '</span>
+                    </div>
+                </div>  
+                ';
+            }
+        }
+
+
+        // ----------------------------------------------------------------------------
         $tabungan = Tabungan::where('unique_student', $siswa->unique);
         $masuk = $tabungan->sum('masuk');
         $keluar = $tabungan->sum('keluar');
@@ -341,9 +381,49 @@ class TabunganController extends Controller
             'nama' => $siswa->nama,
             'masuk' => $masuk,
             'keluar' => $keluar,
-            'transaksi' => $tabungan->get()
+            'transaksi' => $tabungan->get(),
+            'element' => $element,
+            'jenis_pembayaran' => JenisPembayaran::all()
 
         ];
         return view('front-end-tabungan.index', $data);
+    }
+    public function bayarDenganTabungan(Request $request)
+    {
+        $tabungan = Tabungan::where('unique_student', $request->unique_student);
+        $masuk = $tabungan->sum('masuk');
+        $keluar = $tabungan->sum('keluar');
+        $saldo = $masuk - $keluar;
+
+        $nominal = SettingTagihan::where('unique_jenis_pembayaran', $request->unique_jenis_pembayaran)
+            ->where('unique_tahun_ajaran', $request->unique_tahun_ajaran)
+            ->where('unique_kelas', $request->unique_kelas)
+            ->first();
+        $data = [
+            'unique_student' => $request->unique_student,
+            'unique_kelas' => $request->unique_kelas,
+            'unique_tahun_ajaran' => $request->unique_tahun_ajaran,
+            'unique_jenis_pembayaran' => $request->unique_jenis_pembayaran,
+            'unique_generate' => $request->unique_generate,
+            'periode_tagihan' => $request->periode,
+            'tanggal_bayar' => Carbon::now()->setTimezone('Asia/Jakarta'),
+            'nominal' => $nominal->nominal,
+        ];
+        $data['unique'] = Str::orderedUuid();
+        $data2 = [
+            'unique' => Str::orderedUuid(),
+            'unique_student' => $request->unique_student,
+            'jenis_tabungan' => 'wajib',
+            'masuk' => 0,
+            'keluar' => $nominal->nominal,
+            'tanggal' => Carbon::now()->setTimezone('Asia/Jakarta'),
+        ];
+        TagihanSiswa::create($data);
+        Tabungan::create($data2);
+        GenerateTagihan::where('unique', $request->unique_generate)->update(['status' => 1]);
+        return response()->json([
+            'saldo' => $saldo,
+            'nominal' => $nominal->nominal,
+        ]);
     }
 }
