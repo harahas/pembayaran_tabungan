@@ -140,4 +140,5 @@ Route::post('/updateDataTabunganWajib', [TabunganController::class, 'updateDataT
 // DELETE TABUNGAN ALL
 Route::post('/deleteTabungan/{tabungan:unique}', [TabunganController::class, 'deleteTabungan'])->middleware('admin');
 Route::get('/tabunganSiswa', [TabunganController::class, 'tabunganSiswa'])->middleware('student');
-Route::post('/bayarDenganTabungan', [TabunganController::class, 'bayarDenganTabungan'])->middleware('student');
+Route::post('/bayarDenganTabungan', [TabunganController::class, 'bayarDenganTabungan'])->middleware('admin');
+Route::post('/bayarDenganTabunganBerjangka', [TabunganController::class, 'bayarDenganTabunganBerjangka'])->middleware('admin');

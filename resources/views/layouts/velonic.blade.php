@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\DB;
 $tahun = TahunAjaran::where('status', '1')->first();
 @endphp
 <!DOCTYPE html>
-<html lang="en" data-menu-color="light">
+<html lang="en">
 
 <head>
     <meta charset="utf-8" />
@@ -523,7 +523,7 @@ $tahun = TahunAjaran::where('status', '1')->first();
                 , allowClear: true
             });
         })
-        // $("html").attr("data-menu-color", "light")
+        $("html").attr("data-menu-color", "light")
 
     </script>
 

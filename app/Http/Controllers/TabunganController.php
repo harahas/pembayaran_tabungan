@@ -424,6 +424,92 @@ class TabunganController extends Controller
         return response()->json([
             'saldo' => $saldo,
             'nominal' => $nominal->nominal,
+            'siswa' => $request->unique_student
         ]);
+    }
+    public function bayarDenganTabunganBerjangka(Request $request)
+    {
+        $tagihanSiswa = TagihanSiswa::where('unique_generate', $request->unique_generate)->first();
+        $tabungan = Tabungan::where('unique_student', $request->unique_student);
+        $masuk = $tabungan->sum('masuk');
+        $keluar = $tabungan->sum('keluar');
+        $saldo = $masuk - $keluar;
+
+        $nominal = SettingTagihan::where('unique_jenis_pembayaran', $request->unique_jenis_pembayaran)
+            ->where('unique_tahun_ajaran', $request->unique_tahun_ajaran)
+            ->where('unique_kelas', $request->unique_kelas)
+            ->first();
+        if ($tagihanSiswa) {
+            $count = TagihanSiswa::where('unique_generate', $request->unique_generate)->count('id');
+            $sisaBayar = 6 - $count;
+            if ($request->jumlah > $sisaBayar) {
+                $jumlahBaru = $sisaBayar;
+            } else {
+                $jumlahBaru = $request->jumlah;
+            }
+
+            for ($i = 1; $i <= $jumlahBaru; $i++) {
+                $data = [
+                    'unique_student' => $request->unique_student,
+                    'unique_kelas' => $request->unique_kelas,
+                    'unique_tahun_ajaran' => $request->unique_tahun_ajaran,
+                    'unique_jenis_pembayaran' => $request->unique_jenis_pembayaran,
+                    'unique_generate' => $request->unique_generate,
+                    'periode_tagihan' => $request->periode,
+                    'tanggal_bayar' => Carbon::now()->setTimezone('Asia/Jakarta'),
+                    'nominal' => $nominal->nominal,
+                ];
+                $data['unique'] = Str::orderedUuid();
+                $data2 = [
+                    'unique' => Str::orderedUuid(),
+                    'unique_student' => $request->unique_student,
+                    'jenis_tabungan' => 'wajib',
+                    'masuk' => 0,
+                    'keluar' => $nominal->nominal,
+                    'tanggal' => Carbon::now()->setTimezone('Asia/Jakarta'),
+                ];
+                TagihanSiswa::create($data);
+                Tabungan::create($data2);
+                if ($i >= $sisaBayar + 1) {
+                    GenerateTagihan::where('unique', $request->unique_generate)->update(['status' => 1]);
+                }
+            }
+        } else {
+            if ($request->jumlah > 5) {
+                $jumlahBaru = 6;
+            } else {
+                $jumlahBaru = $request->jumlah;
+            }
+            for ($i = 0; $i < $jumlahBaru; $i++) {
+                $data = [
+                    'unique_student' => $request->unique_student,
+                    'unique_kelas' => $request->unique_kelas,
+                    'unique_tahun_ajaran' => $request->unique_tahun_ajaran,
+                    'unique_jenis_pembayaran' => $request->unique_jenis_pembayaran,
+                    'unique_generate' => $request->unique_generate,
+                    'periode_tagihan' => $request->periode,
+                    'tanggal_bayar' => Carbon::now()->setTimezone('Asia/Jakarta'),
+                    'nominal' => $nominal->nominal,
+                ];
+                $data['unique'] = Str::orderedUuid();
+                $data2 = [
+                    'unique' => Str::orderedUuid(),
+                    'unique_student' => $request->unique_student,
+                    'jenis_tabungan' => 'wajib',
+                    'masuk' => 0,
+                    'keluar' => $nominal->nominal,
+                    'tanggal' => Carbon::now()->setTimezone('Asia/Jakarta'),
+                ];
+                TagihanSiswa::create($data);
+                Tabungan::create($data2);
+                if ($i >= 5) {
+                    GenerateTagihan::where('unique', $request->unique_generate)->update(['status' => 1]);
+                }
+            }
+            return response()->json([
+                'saldo' => $saldo,
+                'nominal' => $nominal->nominal,
+            ]);
+        }
     }
 }

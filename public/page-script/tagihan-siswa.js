@@ -343,6 +343,90 @@ $(document).ready(function () {
             }
         });
     }
+
+
+    $("#daftar-tagihan").on("click", "#btn-bayar-tabungan", function () {
+
+        let unique_student = $(this).data("siswa");
+        let unique_tahun_ajaran = $(this).data("unique-tahun");
+        let unique_kelas = $(this).data("kelas");
+        let unique_generate = $(this).data("unique");
+        let periode = $(this).data("periode");
+        let unique_jenis_pembayaran = $(this).data("unique-pembayaran");
+        let csrf = $(this).data("csrf");
+        if (periode == 'SEKALI BAYAR') {
+            Swal.fire({
+                title: "Apakah Kamu Yakin?",
+                text: "Kamu akan melunaskan dengan tabungan",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Ya, Lunaskan!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        data: {
+                            _token: csrf,
+                            unique_student: unique_student,
+                            unique_tahun_ajaran: unique_tahun_ajaran,
+                            unique_kelas: unique_kelas,
+                            unique_generate: unique_generate,
+                            periode: periode,
+                            unique_jenis_pembayaran: unique_jenis_pembayaran
+                        },
+                        url: "/bayarDenganTabungan",
+                        type: "POST",
+                        dataType: 'json',
+                        success: function (response) {
+                            renderTable(response.siswa);
+                            Swal.fire("Good job!", "Pembayaran Berhasil Dilunaskan", "success");
+                        }
+                    });
+                }
+            });
+        } else {
+            Swal.fire({
+                title: "Masukan berapa bulan yang ingin dibayar!",
+                input: "text",
+                inputAttributes: {
+                    autocapitalize: "off"
+                },
+                showCancelButton: true,
+                confirmButtonText: "Bayar",
+                showLoaderOnConfirm: true,
+                preConfirm: async (jumlah) => {
+                    try {
+                        $("#spinner").html(loader)
+                        $.ajax({
+                            data: {
+                                _token: csrf,
+                                unique_student: unique_student,
+                                unique_tahun_ajaran: unique_tahun_ajaran,
+                                unique_kelas: unique_kelas,
+                                unique_generate: unique_generate,
+                                periode: periode,
+                                unique_jenis_pembayaran: unique_jenis_pembayaran,
+                                jumlah: parseInt(jumlah)
+                            },
+                            url: "/bayarDenganTabunganBerjangka",
+                            type: "POST",
+                            dataType: 'json',
+                            success: function (response) {
+                                // console.log(response);
+                                document.location.reload();
+                            }
+                        });
+                    } catch (error) {
+                        Swal.showValidationMessage(`
+                      Request failed: ${error}
+                    `);
+                    }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            })
+        }
+    })
     //Hendler Error
     function displayErrors(errors) {
         // menghapus class 'is-invalid' dan pesan error sebelumnya
@@ -424,5 +508,6 @@ $(document).ready(function () {
             });
         });
     }
+
 })
 

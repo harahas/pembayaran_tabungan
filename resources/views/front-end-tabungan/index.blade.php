@@ -8,10 +8,22 @@
     <link rel="stylesheet" href="/fontawesome/css/all.min.css" />
     <script src="/fontawesome/js/all.min.js"></script>
     <script src="/page-script/jquery.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.4/dist/sweetalert2.all.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.4/dist/sweetalert2.min.css" rel="stylesheet">
+    <script>
+        const loader = `<div id="loader">
+        <span class="loader"></span>
+    </div>`
+
+    </script>
     <title>Rekening</title>
+
 </head>
 
 <body>
+    <div class="render-loader">
+
+    </div>
     <div class="container">
         <!-- <div class="pencarian">
             <button><i class="fa-solid fa-magnifying-glass"></i></button>
@@ -97,6 +109,7 @@
                 <div class="clear"></div>
             </div>
             <div class="icon-hide">
+
                 <span id="hide"></span>
             </div>
         </div>
