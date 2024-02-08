@@ -120,7 +120,7 @@ $(document).ready(function () {
                             Sisa Bayar: <strong>${response.data_month}</strong> Bulan!
                         </div>
                     </div>
-                    
+
                     `;
                     let element2 = `<div class="row"><div class="col" style="display:flex;align-items:center"><label for="terbayar">Jumlah bulan yang ingin dibayar: &nbsp;</label>`
 
@@ -314,7 +314,7 @@ $(document).ready(function () {
         }
     })
 
-    //Render Table 
+    //Render Table
     function renderTable(unique) {
         $.ajax({
             data: { unique: unique },
@@ -379,8 +379,12 @@ $(document).ready(function () {
                         type: "POST",
                         dataType: 'json',
                         success: function (response) {
-                            renderTable(response.siswa);
-                            Swal.fire("Good job!", "Pembayaran Berhasil Dilunaskan", "success");
+                            if (response.kurang) {
+                                Swal.fire("Warning!", response.kurang, "warning");
+                            } else {
+                                renderTable(response.siswa);
+                                Swal.fire("Good job!", "Pembayaran Berhasil Dilunaskan", "success");
+                            }
                         }
                     });
                 }
@@ -413,8 +417,14 @@ $(document).ready(function () {
                             type: "POST",
                             dataType: 'json',
                             success: function (response) {
-                                // console.log(response);
-                                document.location.reload();
+                                if (response.kurang) {
+                                    $("#spinner").html('')
+                                    Swal.fire("Warning!", response.kurang, "warning");
+                                } else {
+                                    $("#spinner").html('')
+                                    renderTable(response.siswa);
+                                    Swal.fire("Good job!", "Pembayaran Berhasil Dilunaskan", "success");
+                                }
                             }
                         });
                     } catch (error) {

@@ -31,7 +31,7 @@ class TabunganController extends Controller
     }
     public function dataTableSukarela(Request $request)
     {
-        // jika semua im=nputan kosong 
+        // jika semua im=nputan kosong
         if ($request->unique_student == '' && $request->tgl_awal == '' && $request->tgl_akhir == '') {
             $query = DB::table('tabungans as a')
                 ->join('students as b', 'a.unique_student', '=', 'b.unique')
@@ -91,7 +91,7 @@ class TabunganController extends Controller
     }
     public function dataTableWajib(Request $request)
     {
-        // jika semua im=nputan kosong 
+        // jika semua im=nputan kosong
         if ($request->unique_student == '' && $request->tgl_awal == '' && $request->tgl_akhir == '') {
             $query = DB::table('tabungans as a')
                 ->join('students as b', 'a.unique_student', '=', 'b.unique')
@@ -145,7 +145,7 @@ class TabunganController extends Controller
         return DataTables::of($query)->addColumn('action', function ($row) {
             $latest = Tabungan::latest()->first();
             $actionBtn = '';
-            $actionBtn .= '  
+            $actionBtn .= '
             <button class="btn btn-rounded btn-sm btn-warning text-dark edit-button" title="Edit Data" data-unique="' . $row->unique . '"><i class="ri-edit-line"></i></button>';
             if ($row->unique == $latest->unique) {
                 $actionBtn .= '<button class="btn btn-rounded btn-sm btn-danger text-white delete-button ms-1" title="Hapus Data" data-unique="' . $row->unique . '" data-token="' . csrf_token() . '"><i class="ri-delete-bin-line"></i></button>';
@@ -155,7 +155,7 @@ class TabunganController extends Controller
     }
     public function dataTableTransport(Request $request)
     {
-        // jika semua im=nputan kosong 
+        // jika semua im=nputan kosong
         if ($request->unique_student == '' && $request->tgl_awal == '' && $request->tgl_akhir == '') {
             $query = DB::table('tabungans as a')
                 ->join('students as b', 'a.unique_student', '=', 'b.unique')
@@ -217,7 +217,7 @@ class TabunganController extends Controller
     public function tambahDataNabung(Request $request)
     {
         $rules = [
-            // RULES DIAMBIL DARI INPUTAN NAME 
+            // RULES DIAMBIL DARI INPUTAN NAME
             'unique_student' => 'required',
             'jenis_tabungan' => 'required',
             'tanggal' => 'required',
@@ -291,7 +291,7 @@ class TabunganController extends Controller
     public function updateDataTabunganWajib(Request $request)
     {
         $rules = [
-            // RULES DIAMBIL DARI INPUTAN NAME 
+            // RULES DIAMBIL DARI INPUTAN NAME
             'unique_student' => 'required',
             'tanggal' => 'required',
             'masuk' => 'required',
@@ -366,7 +366,7 @@ class TabunganController extends Controller
                         <span id="periode-tagihan">' . $row2->tahun_awal . '/' . $row2->tahun_akhir . ' ' . $row2->periode . '</span>
                         <span id="jml-bayar">' . rupiah($row2->nominal) . '</span>
                     </div>
-                </div>  
+                </div>
                 ';
             }
         }
@@ -394,11 +394,15 @@ class TabunganController extends Controller
         $masuk = $tabungan->sum('masuk');
         $keluar = $tabungan->sum('keluar');
         $saldo = $masuk - $keluar;
-
         $nominal = SettingTagihan::where('unique_jenis_pembayaran', $request->unique_jenis_pembayaran)
             ->where('unique_tahun_ajaran', $request->unique_tahun_ajaran)
             ->where('unique_kelas', $request->unique_kelas)
             ->first();
+        if ($saldo < $nominal->nominal) {
+            return response()->json([
+                'kurang' => 'Saldo tidak mencukupi'
+            ]);
+        }
         $data = [
             'unique_student' => $request->unique_student,
             'unique_kelas' => $request->unique_kelas,
@@ -440,15 +444,21 @@ class TabunganController extends Controller
             ->where('unique_kelas', $request->unique_kelas)
             ->first();
         if ($tagihanSiswa) {
-            $count = TagihanSiswa::where('unique_generate', $request->unique_generate)->count('id');
+            // proses sql
+            // SELECT COUNT(unique_generate)
+            // FROM tagihan_siswas
+            // WHERE unique_generate = '9b429133-f8e6-4c4a-956a-704fd394c6dd';
+            $count = TagihanSiswa::where('unique_generate', $request->unique_generate)->count('unique_generate');
             $sisaBayar = 6 - $count;
             if ($request->jumlah > $sisaBayar) {
                 $jumlahBaru = $sisaBayar;
             } else {
                 $jumlahBaru = $request->jumlah;
             }
-
-            for ($i = 1; $i <= $jumlahBaru; $i++) {
+            if ($saldo < $nominal->nominal  * $jumlahBaru) {
+                return response()->json(['kurang' => 'Saldo tidak mencukupi']);
+            }
+            for ($i = 1; $i <= $jumlahBaru; $i++) { // 1
                 $data = [
                     'unique_student' => $request->unique_student,
                     'unique_kelas' => $request->unique_kelas,
@@ -470,15 +480,23 @@ class TabunganController extends Controller
                 ];
                 TagihanSiswa::create($data);
                 Tabungan::create($data2);
-                if ($i >= $sisaBayar + 1) {
+                if ($i >= $sisaBayar) {
                     GenerateTagihan::where('unique', $request->unique_generate)->update(['status' => 1]);
                 }
             }
+            return response()->json([
+                'saldo' => $saldo,
+                'nominal' => $nominal->nominal,
+                'siswa' => $request->unique_student
+            ]);
         } else {
             if ($request->jumlah > 5) {
                 $jumlahBaru = 6;
             } else {
                 $jumlahBaru = $request->jumlah;
+            }
+            if ($saldo < $nominal->nominal * $jumlahBaru) {
+                return response()->json(['kurang' => 'Saldo tidak cukup']);
             }
             for ($i = 0; $i < $jumlahBaru; $i++) {
                 $data = [
@@ -509,6 +527,7 @@ class TabunganController extends Controller
             return response()->json([
                 'saldo' => $saldo,
                 'nominal' => $nominal->nominal,
+                'siswa' => $request->unique_student
             ]);
         }
     }
