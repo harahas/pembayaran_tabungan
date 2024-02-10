@@ -228,12 +228,12 @@ class TagihanSiswaController extends Controller
                                     <td class="text-center">
                                     <div style="display:flex; justify-content:center; align-items:center; gap: 2px;">
                                     <button type="button" id="btn-bayar" class="btn btn-primary" data-siswa="' . $row->unique . '" data-kelas="' . $row->kelas . '" data-unique="' . $row->unique_generate . '" data-tahun="' . $row2->tahun_awal . '/' . $row2->tahun_akhir . ' ' . $row2->periode . '" data-nominal="' . $row2->nominal . '" data-periode="' . $row2->jenis_periode . '" data-unique-tahun="' . $row->unique_tahun_ajaran . '" data-unique-pembayaran="' . $row->unique_tagihan . '" data-jenis="' . $row2->jenis_pembayaran . '">Bayar</button>
-                                    
+
                                     <button type="button" id="btn-bayar-tabungan" class="btn btn-success " data-siswa="' . $row->unique . '" data-kelas="' . $row->kelas . '" data-unique="' . $row->unique_generate . '" data-tahun="' . $row2->tahun_awal . '/' . $row2->tahun_akhir . ' ' . $row2->periode . '" data-nominal="' . $row2->nominal . '" data-periode="' . $row2->jenis_periode . '" data-unique-tahun="' . $row->unique_tahun_ajaran . '" data-unique-pembayaran="' . $row->unique_tagihan . '" data-jenis="' . $row2->jenis_pembayaran . '" data-csrf="' . csrf_token() . '">Bayar Dengan Tabungan</button>
-                                    </div>  
+                                    </div>
                                     </td>
                                     </tr>
-                                
+
                                 ';
             }
         }
@@ -284,7 +284,7 @@ class TagihanSiswaController extends Controller
                                         <button type="button" id="btn-bayar" class="btn btn-primary" data-siswa="' . $row->unique . '" data-kelas="' . $row->kelas . '" data-unique="' . $row->unique_generate . '" data-tahun="' . $row2->tahun_awal . '/' . $row2->tahun_akhir . ' ' . $row2->periode . '" data-nominal="' . $row2->nominal . '" data-periode="' . $row2->jenis_periode . '" data-unique-tahun="' . $row->unique_tahun_ajaran . '" data-unique-pembayaran="' . $row->unique_tagihan . '" data-jenis="' . $row2->jenis_pembayaran . '">Riwayat</button>
                                     </td>
                                 </tr>
-                                
+
                                 ';
             }
         }

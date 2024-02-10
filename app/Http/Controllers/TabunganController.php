@@ -284,11 +284,104 @@ class TabunganController extends Controller
             'saldoTransport' => rupiah($saldoTransport),
         ]);
     }
+    // EDIT DATA TABUNGAN
     public function getDataTabunganWajib(Tabungan $tabungan)
     {
         return response()->json(['tabungan' => $tabungan]);
     }
+    public function getDataTabunganSukarela(Tabungan $tabungan)
+    {
+        return response()->json(['tabungan' => $tabungan]);
+    }
+    public function getDataTabunganTransport(Tabungan $tabungan)
+    {
+        return response()->json(['tabungan' => $tabungan]);
+    }
     public function updateDataTabunganWajib(Request $request)
+    {
+        $rules = [
+            // RULES DIAMBIL DARI INPUTAN NAME
+            'unique_student' => 'required',
+            'tanggal' => 'required',
+            'masuk' => 'required',
+            'keluar' => 'required',
+        ];
+        $pesan = [
+            'unique_student.required' => 'Silahkan Memilih Salah Satu Siswa',
+            'tanggal.required' => 'Silahkan Pilih Tanggal',
+            'masuk.required' => 'Tidak Boleh Kosong',
+            'keluar.required' => 'Tidak Boleh Kosong',
+        ];
+        $validator = Validator::make($request->all(), $rules, $pesan);
+        // KETIKA ADA YANG TIDAK VALID
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors(),
+            ]);
+        } else {
+            $query = Tabungan::where('unique', $request->current_unique)->first();
+            $sumMasuk = Tabungan::where('unique_student', $request->unique_student)
+                ->where('jenis_tabungan', $request->jenis_tabungan)->sum('masuk');
+            $sumKeluar = Tabungan::where('unique_student', $request->unique_student)
+                ->where('jenis_tabungan', $request->jenis_tabungan)->sum('keluar');
+            $currentMasuk = $sumMasuk - $query->masuk + $request->masuk;
+            $currentKeluar = $sumKeluar - $query->keluar + $request->keluar;
+            if (($currentMasuk - $currentKeluar) < 0) {
+                return response()->json(['kurang' => 'Saldo Tidak Mencukupi Untuk Melakukan Penarikan']);
+            }
+            $data = [
+                'unique_student' => $request->unique_student,
+                'masuk' => $request->masuk,
+                'keluar' => $request->keluar,
+                'tanggal' => $request->tanggal,
+            ];
+            Tabungan::where('unique', $request->current_unique)->update($data);
+            return response()->json(['success' => 'Data Berhasil di simpan']);
+        }
+    }
+    public function updateDataTabunganTransport(Request $request)
+    {
+        $rules = [
+            // RULES DIAMBIL DARI INPUTAN NAME
+            'unique_student' => 'required',
+            'tanggal' => 'required',
+            'masuk' => 'required',
+            'keluar' => 'required',
+        ];
+        $pesan = [
+            'unique_student.required' => 'Silahkan Memilih Salah Satu Siswa',
+            'tanggal.required' => 'Silahkan Pilih Tanggal',
+            'masuk.required' => 'Tidak Boleh Kosong',
+            'keluar.required' => 'Tidak Boleh Kosong',
+        ];
+        $validator = Validator::make($request->all(), $rules, $pesan);
+        // KETIKA ADA YANG TIDAK VALID
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors(),
+            ]);
+        } else {
+            $query = Tabungan::where('unique', $request->current_unique)->first();
+            $sumMasuk = Tabungan::where('unique_student', $request->unique_student)
+                ->where('jenis_tabungan', $request->jenis_tabungan)->sum('masuk');
+            $sumKeluar = Tabungan::where('unique_student', $request->unique_student)
+                ->where('jenis_tabungan', $request->jenis_tabungan)->sum('keluar');
+            $currentMasuk = $sumMasuk - $query->masuk + $request->masuk;
+            $currentKeluar = $sumKeluar - $query->keluar + $request->keluar;
+            if (($currentMasuk - $currentKeluar) < 0) {
+                return response()->json(['kurang' => 'Saldo Tidak Mencukupi Untuk Melakukan Penarikan']);
+            }
+            $data = [
+                'unique_student' => $request->unique_student,
+                'masuk' => $request->masuk,
+                'keluar' => $request->keluar,
+                'tanggal' => $request->tanggal,
+            ];
+            Tabungan::where('unique', $request->current_unique)->update($data);
+            return response()->json(['success' => 'Data Berhasil di simpan']);
+        }
+    }
+    public function updateDataTabunganSukarela(Request $request)
     {
         $rules = [
             // RULES DIAMBIL DARI INPUTAN NAME

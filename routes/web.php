@@ -130,11 +130,13 @@ Route::get('/dataTableTransport', [TabunganController::class, 'dataTableTranspor
 
 // Tabungan
 Route::get('/inputTabungan', [TabunganController::class, 'index'])->middleware('admin');
-// UNTUK MENAMBAHKAN DATA TABUNGAN 
+// UNTUK MENAMBAHKAN DATA TABUNGAN
 Route::post('/tambahDataNabung', [TabunganController::class, 'tambahDataNabung'])->middleware('admin');
 Route::get('/ambilSaldo', [TabunganController::class, 'ambilSaldo'])->middleware('admin');
 // EDIT DATA
 Route::get('/getDataTabunganWajib/{tabungan:unique}', [TabunganController::class, 'getDataTabunganWajib'])->middleware('admin');
+Route::get('/getDataTabunganSukarela/{tabungan:unique}', [TabunganController::class, 'getDataTabunganSukarela'])->middleware('admin');
+Route::get('/getDataTabunganTransport/{tabungan:unique}', [TabunganController::class, 'getDataTabunganSukarela'])->middleware('admin');
 // UPDATE DATA
 Route::post('/updateDataTabunganWajib', [TabunganController::class, 'updateDataTabunganWajib'])->middleware('admin');
 // DELETE TABUNGAN ALL

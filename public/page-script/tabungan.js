@@ -373,6 +373,115 @@ $(document).ready(function () {
         });
     });
 
+    // KETIKA TOMBOL EDIT DI TABUNGAN SUKARELA DI KLIK :)
+    // KETIKA TOMBOL EDIT DI KLIK
+    $("#table-tabungan-sukarela").on("click", ".edit-button", function () {
+        let unique = $(this).data("unique");
+        $.ajax({
+            url: "/getDataTabunganSukarela/" + unique,
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                $("#current_unique").val(response.tabungan.unique);
+                $("#unique_student").val(response.tabungan.unique_student);
+                $("#jenis_tabungan").val(response.tabungan.jenis_tabungan);
+                $("#jenis_tabungan").parent().addClass("d-none");
+                $("#tanggal").val(response.tabungan.tanggal);
+                $("#masuk").val(response.tabungan.masuk);
+                $("#keluar").val(response.tabungan.keluar);
+                $("#title-modal").html("Update Transaksi");
+                $("#btn-action").html(
+                    `<button type="button" class="btn btn-primary" id="update-data">Update Data</button>`
+                );
+                $("#modal-tabungan-siswa").modal("show");
+            },
+        });
+    });
+    // DELETE TABUNGAN SUKARELA HAPUS DATA
+    $("#table-tabungan-sukarela").on("click", ".delete-button", function () {
+        let unique = $(this).attr("data-unique");
+        let token = $(this).attr("data-token");
+        Swal.fire({
+            title: "Apakah Kamu Yakin?",
+            text: "Kamu akan menghapus data tabungan!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Hapus!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    data: {
+                        _token: token,
+                    },
+                    url: "/deleteTabungan/" + unique,
+                    type: "POST",
+                    dataType: "json",
+                    success: function (response) {
+                        table.ajax.reload();
+                        table2.ajax.reload();
+                        table3.ajax.reload();
+                        Swal.fire("Deleted!", response.success, "success");
+                    },
+                });
+            }
+        });
+    });
+    $("#table-tabungan-transport").on("click", ".edit-button", function () {
+        let unique = $(this).data("unique");
+        $.ajax({
+            url: "/getDataTabunganTransport/" + unique,
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                $("#current_unique").val(response.tabungan.unique);
+                $("#unique_student").val(response.tabungan.unique_student);
+                $("#jenis_tabungan").val(response.tabungan.jenis_tabungan);
+                $("#jenis_tabungan").parent().addClass("d-none");
+                $("#tanggal").val(response.tabungan.tanggal);
+                $("#masuk").val(response.tabungan.masuk);
+                $("#keluar").val(response.tabungan.keluar);
+                $("#title-modal").html("Update Transaksi");
+                $("#btn-action").html(
+                    `<button type="button" class="btn btn-primary" id="update-data">Update Data</button>`
+                );
+                $("#modal-tabungan-siswa").modal("show");
+            },
+        });
+    });
+    // KETIKA BUTTON HAPUS TABUNGAN TRANSPORT DIKLIK
+    $("#table-tabungan-transport").on("click", ".delete-button", function () {
+        let unique = $(this).attr("data-unique");
+        let token = $(this).attr("data-token");
+        Swal.fire({
+            title: "Apakah Kamu Yakin?",
+            text: "Kamu akan menghapus data tabungan!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Hapus!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    data: {
+                        _token: token,
+                    },
+                    url: "/deleteTabungan/" + unique,
+                    type: "POST",
+                    dataType: "json",
+                    success: function (response) {
+                        table.ajax.reload();
+                        table2.ajax.reload();
+                        table3.ajax.reload();
+                        Swal.fire("Deleted!", response.success, "success");
+                    },
+                });
+            }
+        });
+    });
+
     //Hendler Error
     function displayErrors(errors) {
         // menghapus class 'is-invalid' dan pesan error sebelumnya
