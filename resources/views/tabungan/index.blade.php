@@ -29,7 +29,7 @@
                                 <input type="date" class="form-control" id="tgl_awal">
                             </div>
                             <div class="col-sm-4 mt-2">
-                                <label for="tgl_akhir" class="form-label">Tanggal zAkhir</label>
+                                <label for="tgl_akhir" class="form-label">Tanggal Akhir</label>
                                 <input type="date" class="form-control" id="tgl_akhir">
                             </div>
                         </div>
