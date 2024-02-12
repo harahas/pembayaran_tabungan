@@ -41,11 +41,11 @@
                             <div class="row">
                                 <div class="col-6">
                                     <small>Jenis Tabungan</small>
-                                    <p><i class="ri-file-paper-2-fill"></i>&nbsp;Sukarela</p>
+                                    <p><i class="ri-file-paper-2-fill"></i>&nbsp;Wajib</p>
                                 </div>
                                 <div class="col-6" style="border-left: 1px solid grey">
                                     <small>Saldo</small>
-                                    <p><i class=" ri-wallet-3-fill"></i>&nbsp; <span id="saldo-sukarela">-</span></p>
+                                    <p><i class="ri-wallet-3-fill"></i>&nbsp; <span id="saldo-wajib">-</span></p>
                                 </div>
                             </div>
                         </div>
@@ -55,11 +55,11 @@
                             <div class="row">
                                 <div class="col-6">
                                     <small>Jenis Tabungan</small>
-                                    <p><i class="ri-file-paper-2-fill"></i>&nbsp;Wajib</p>
+                                    <p><i class="ri-file-paper-2-fill"></i>&nbsp;Sukarela</p>
                                 </div>
                                 <div class="col-6" style="border-left: 1px solid grey">
                                     <small>Saldo</small>
-                                    <p><i class=" ri-wallet-3-fill"></i>&nbsp; <span id="saldo-wajib">-</span></p>
+                                    <p><i class=" ri-wallet-3-fill"></i>&nbsp; <span id="saldo-sukarela">-</span></p>
                                 </div>
                             </div>
                         </div>
