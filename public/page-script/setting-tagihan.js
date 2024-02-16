@@ -127,7 +127,7 @@ $(document).ready(function () {
             }
         });
         table.ajax.reload()
-    })
+    });
 
     //Ketika Nominal Di Klik
     $("#table-setting-tagihan").on("click", ".view-nominal", function () {
@@ -261,4 +261,4 @@ $(document).ready(function () {
             });
         });
     }
-})
+});

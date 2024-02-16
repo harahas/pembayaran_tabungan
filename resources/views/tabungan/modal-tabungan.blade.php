@@ -21,6 +21,7 @@
                                     @endforeach
                                 </select>
                             </div>
+
                             <div class="form-group mt-2">
                                 <label for="jenis_tabungan">Jenis Tabungan</label>
                                 <select class="form-control" name="jenis_tabungan" id="jenis_tabungan">

@@ -78,7 +78,7 @@
             @if(auth()->user()->role == 'ADMIN')
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarPages3" aria-expanded="false" aria-controls="sidebarPages" class="side-nav-link">
-                    <i class="ri-pages-line"></i>
+                    <i class="bi bi-cash-coin"></i>
                     <span> Keuangan </span>
                     <span class="menu-arrow"></span>
                 </a>
@@ -110,7 +110,7 @@
             </li>
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarPages4" aria-expanded="false" aria-controls="sidebarPages" class="side-nav-link">
-                    <i class="ri-pages-line"></i>
+                    <i class="mdi mdi-account-cash-outline"></i>
                     <span> Tabungan Siswa </span>
                     <span class="menu-arrow"></span>
                 </a>

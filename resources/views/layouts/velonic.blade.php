@@ -8,7 +8,7 @@ $tahun = TahunAjaran::where('status', '1')->first();
 
 <head>
     <meta charset="utf-8" />
-    <title>{{ $title_page }} | Pembayaran</title>
+    <title>{{ $title_page }} | Manajemen Pembayaran Sekolah</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="A fully responsive admin theme which can be used to build CRM, CMS,ERP etc." name="description" />
     <meta content="Techzaa" name="author" />
@@ -163,7 +163,7 @@ $tahun = TahunAjaran::where('status', '1')->first();
 
                     <!-- Sidebar Menu Toggle Button -->
                     <button class="button-toggle-menu">
-                        <i class="ri-menu-line"></i>
+                        <i class="ri-apps-line"></i>
                     </button>
 
                     <!-- Horizontal Menu Toggle Button -->
@@ -259,7 +259,7 @@ $tahun = TahunAjaran::where('status', '1')->first();
                             <div class="page-title-box">
                                 <div class="page-title-right">
                                     <ol class="breadcrumb m-0">
-                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Online School</a></li>
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Pembayaran</a></li>
                                         <li class="breadcrumb-item"><a href="javascript: void(0);">Master</a></li>
                                         <li class="breadcrumb-item active">{{ $title_page }}</li>
                                     </ol>
@@ -523,7 +523,7 @@ $tahun = TahunAjaran::where('status', '1')->first();
                 , allowClear: true
             });
         })
-        $("html").attr("data-menu-color", "light")
+        // $("html").attr("data-menu-color", "light")
 
     </script>
 

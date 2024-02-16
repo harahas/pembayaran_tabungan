@@ -1,11 +1,11 @@
 @extends('layouts.velonic')
 @section('container-velonic')
 <div class="row">
-    <div class="col-12 mb-3">
+    {{-- <div class="col-12 mb-3">
         <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modal-jenis-pembayaran" id="btn-add-data">
             <i class="ri-add-box-line"></i>&nbsp;<span>Tambah Jenis Pembayaran</span>
         </button>
-    </div>
+    </div> --}}
     <div class="col-12">
         <div class="card" style="border-radius:20px">
             <div class="card-header" style="border-radius:20px 20px 0 0">
