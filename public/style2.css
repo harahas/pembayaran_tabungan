@@ -64,7 +64,7 @@ p {
     border-radius: 5px 5px 0px 0 !important;
     display: flex;
     justify-content: space-between;
-    background-color: #0097e6;
+    background-color: #134f07;
     color: white !important;
 }
 
@@ -73,7 +73,7 @@ p {
 }
 
 .saldo .menu {
-    background-color: #00a8ff;
+    background-color: #134f07e7;
 }
 
 .menu .btn {
@@ -147,7 +147,7 @@ p {
 }
 
 .bot-bar {
-    background-color:#0097e6;
+    background-color:#ffffff;
     position: fixed;
     bottom: 0;
     left: 0;

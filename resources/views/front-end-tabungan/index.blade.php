@@ -11,9 +11,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.4/dist/sweetalert2.all.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.4/dist/sweetalert2.min.css" rel="stylesheet">
     <script>
-        const loader = `<div id="loader">
+        const loader = <div id="loader">
         <span class="loader"></span>
-    </div>`
+    </div>
 
     </script>
     <title>Rekening</title>
@@ -35,16 +35,16 @@
                 <p>{{ rupiah($saldo) }}</p>
             </div>
             <div class="menu">
-                <h2 style="margin-left:27px; color: white;">{{ $nama }}</h2>
+                <h2 style="margin-left:27px; color: white;">Hai, {{ $nama }}</h2>
                 <div class="img">
                     <img src="/img2/dompet.png" alt="">
-                    <img src="/img2/payment.png" alt="" class="bayar">
+                    {{-- <img src="/img2/payment.png" alt="" class="bayar"> --}}
                     <img src="/img2/histori.png" alt="">
                 </div>
                 <div class="text">
                     <p>Dompet</p>
-                    <p>Bayar</p>
-                    <p>Tagihan</p>
+                    {{-- <p>Bayar</p> --}}
+                    <p>Informasi Tagihan</p>
                 </div>
             </div>
         </div>
@@ -96,12 +96,12 @@
     {{-- Modal front end --}}
     <div class="modal">
         <div class="modal-bayar">
-            <div class="header">
+            {{-- <div class="header">
                 <button type="button" data-periode="BULANAN" class="btn btn-secondary">Bulanan</button>
                 <button type="button" data-periode="MINGGUAN" class="btn btn-secondary">Mingguan</button>
                 <button type="button" data-periode="HARIAN" class="btn btn-secondary">Harian</button>
                 <button type="button" data-periode="SEKALI BAYAR" class="btn btn-secondary">Sekali Bayar</button>
-            </div>
+            </div> --}}
 
             <div class="list-tagihan">
                 <input type="hidden" id="element_tagihan" value="{{ $element }}">
